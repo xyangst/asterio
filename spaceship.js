@@ -71,8 +71,8 @@ class Spaceship {
     rotate(this.rotation);
     // fire
     if (this.thrusting) {
-      heart(0, this.r / 2, canvasSize / 25);
-      heart(0, this.r / 2, canvasSize / 42)
+      drawHeart(0, this.r / 2, canvasSize / 25);
+      drawHeart(0, this.r / 2, canvasSize / 42)
     }
     // rockets
 
