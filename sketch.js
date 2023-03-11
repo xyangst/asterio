@@ -21,11 +21,12 @@ function setup() {
   canvasSize = min(windowWidth, windowHeight);
   createCanvas(canvasSize, canvasSize);
 
-  //start the Game
+  //start Game
   restartGame(3, 0)
   console.log(canvasSize)
 
 }
+//to keep aspect ratio & canvas size on resize
 function windowResized() {
   canvasSize = min(windowWidth, windowHeight);
   // resize the canvas whenever the window size changes
@@ -41,8 +42,7 @@ function preload() {
 function draw() {
 
   Timer += deltaTime;
-  //ui drawing (in IIFE because why not)
-
+  //ui drawing (in IIFE to make it collapsable)
   (function () {
     //Your code goes here
     push()
@@ -53,7 +53,7 @@ function draw() {
 
 
     for (let i = 0; i < lives; i++) {
-      heart(i * canvasSize / 20 + canvasSize / 16, canvasSize / 16, canvasSize / 32)
+      drawHeart(i * canvasSize / 20 + canvasSize / 16, canvasSize / 16, canvasSize / 32)
 
     }
     textAlign(LEFT, TOP)
@@ -81,13 +81,15 @@ function draw() {
     pop()
 
   })()
-  //game
+  //Game Loop
   if (lives > 0) {
     //make sure there are always 10 asteroids
     if (asteroids.length < 10) {
       asteroids.push(new Asteroid())
     }
-    //collision checks
+    //loops
+
+    //for all asteroids
     for (let i = 0; i < asteroids.length; i++) {
       if (ship.hits(asteroids[i])) {
         restartGame(lives - 1, score)
@@ -96,6 +98,7 @@ function draw() {
       asteroids[i].display()
       asteroids[i].update()
     }
+    //for lasers
     for (let i = 0; i < lasers.length; i++) {
 
       lasers[i].display()
@@ -103,6 +106,7 @@ function draw() {
       if (lasers[i].offscreen()) {
         lasers.splice(i, 1);
       } else {
+        //collision check
         for (let j = asteroids.length - 1; j >= 0; j--) {
           if (lasers[i].hits(asteroids[j])) {
             if (sound) bang.play()
@@ -121,6 +125,7 @@ function draw() {
         }
       }
     }
+    //ship
 
     // Update position
     ship.update();
@@ -129,7 +134,7 @@ function draw() {
     // Draw ship
     ship.display();
 
-     
+
     if (keyIsDown(LEFT_ARROW)) {
       ship.turn(-0.06);
     } else if (keyIsDown(RIGHT_ARROW)) {
@@ -143,15 +148,17 @@ function draw() {
 }
 
 function keyPressed() {
-
+  // Space shoot
   if (keyIsDown(32)) {
     if (sound) pew.play()
     lasers.push(new Laser(ship.position, ship.rotation))
     ship.shoot = true
   }
+  // R restart
   if (keyIsDown(82)) {
     restartGame()
   }
+  // M mute
   if (keyIsDown(77)) {
     sound = !sound
 
@@ -167,14 +174,15 @@ function restartGame(h = 3, s = 0) {
     localStorage.setItem('highscore', highscore);
 
   }
+  //reset whole game
   score = s
   lasers = []
   asteroids = []
   lives = h;
 }
 
-
-function heart(x, y, size) {
+//from https://editor.p5js.org/Mithru/sketches/Hk1N1mMQg
+function drawHeart(x, y, size) {
   push()
   stroke(255)
   strokeWeight(canvasSize / 500)
